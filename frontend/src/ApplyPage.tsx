@@ -96,7 +96,20 @@ export default function ApplyPage() {
 
   return (
     <div style={{ maxWidth: '480px', margin: '0 auto', backgroundColor: '#f8f9fc', minHeight: '100vh', fontFamily: "'Inter', sans-serif", position: 'relative' }}>
-      <style>{`input::placeholder { color: #a0aec0 !important; } input:focus { border-color: #005A9C !important; outline: none; }`}</style>
+      <style>{`
+        input::placeholder { color: #a0aec0 !important; font-weight: 400 !important; }
+        input:focus { border-color: #005A9C !important; outline: none; }
+        
+        /* Hides the ugly up/down arrows on number inputs */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+          -webkit-appearance: none; 
+          margin: 0; 
+        }
+        input[type=number] {
+          -moz-appearance: textfield;
+        }
+      `}</style>
 
       <div style={{ background: 'linear-gradient(135deg, #003B73 0%, #005A9C 100%)', padding: '24px 20px', color: 'white', borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px' }}>
         <div onClick={() => step === 1 ? navigate('/') : setStep(1)} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '15px', color: 'white', background: 'rgba(255,255,255,0.15)', padding: '8px 16px', borderRadius: '20px', cursor: 'pointer', marginBottom: '20px' }}>
@@ -110,10 +123,27 @@ export default function ApplyPage() {
           <>
             <h3 style={{ fontSize: '20px', margin: '0 0 8px 0' }}>How much do you need?</h3>
             <p style={{ fontSize: '14px', color: '#666', marginBottom: '24px' }}>Choose between ZWG 5,000 and ZWG 800,000.</p>
+            
+            {/* IMPROVED INPUT FIELD */}
             <div style={{ display: 'flex', alignItems: 'center', border: '2px solid #e2e8f0', borderRadius: '14px', padding: '0 20px', marginBottom: '20px', backgroundColor: '#fcfcfc' }}>
               <span style={{ fontWeight: 800, color: '#005A9C', fontSize: '18px', marginRight: '10px' }}>ZWG</span>
-              <input type="number" value={amount} onChange={(e) => setAmount(Number(e.target.value))} style={{ width: '100%', padding: '18px 0', border: 'none', backgroundColor: 'transparent', fontSize: '18px', fontWeight: 600, outline: 'none' }} />
+              <input 
+                type="number" 
+                value={amount} 
+                onChange={(e) => setAmount(Number(e.target.value))} 
+                style={{ 
+                  width: '100%', 
+                  padding: '18px 0', 
+                  border: 'none', 
+                  backgroundColor: 'transparent', 
+                  fontSize: '20px', // Increased size
+                  fontWeight: 700,  // Made bold
+                  color: '#111',    // FIXED: Forced text color to black
+                  outline: 'none' 
+                }} 
+              />
             </div>
+
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '24px' }}>
               {[10000, 50000, 200000, 800000].map(val => (
                 <div key={val} onClick={() => setAmount(val)} style={{ padding: '12px 18px', borderRadius: '20px', border: amount === val ? '2px solid #005A9C' : '1px solid #e2e8f0', backgroundColor: amount === val ? '#005A9C' : 'white', color: amount === val ? 'white' : '#333', fontSize: '14px', cursor: 'pointer', fontWeight: 600 }}>ZWG {val.toLocaleString()}</div>
@@ -131,9 +161,9 @@ export default function ApplyPage() {
         ) : (
           <>
             <h3 style={{ fontSize: '20px', margin: '0 0 8px 0' }}>Tell us about you</h3>
-            <input type="text" placeholder="Full Name (e.g. Tinashe Moyo)" value={fullName} onChange={(e) => setFullName(e.target.value)} style={{ width: '100%', padding: '18px 20px', borderRadius: '14px', border: '2px solid #e2e8f0', backgroundColor: '#fcfcfc', marginBottom: '20px', boxSizing: 'border-box' }} />
-            <input type="text" placeholder="City / Town (e.g. Harare)" value={city} onChange={(e) => setCity(e.target.value)} style={{ width: '100%', padding: '18px 20px', borderRadius: '14px', border: '2px solid #e2e8f0', backgroundColor: '#fcfcfc', marginBottom: '20px', boxSizing: 'border-box' }} />
-            <input type="tel" placeholder="EcoCash Number (77X XXX XXX)" value={momoNumber} onChange={(e) => setMomoNumber(e.target.value.replace(/\D/g, '').slice(0,9))} style={{ width: '100%', padding: '18px 20px', borderRadius: '14px', border: '2px solid #e2e8f0', backgroundColor: '#fcfcfc', boxSizing: 'border-box' }} />
+            <input type="text" placeholder="Full Name (e.g. Tinashe Moyo)" value={fullName} onChange={(e) => setFullName(e.target.value)} style={{ width: '100%', padding: '18px 20px', borderRadius: '14px', border: '2px solid #e2e8f0', backgroundColor: '#fcfcfc', marginBottom: '20px', boxSizing: 'border-box', color: '#111', fontWeight: 600 }} />
+            <input type="text" placeholder="City / Town (e.g. Harare)" value={city} onChange={(e) => setCity(e.target.value)} style={{ width: '100%', padding: '18px 20px', borderRadius: '14px', border: '2px solid #e2e8f0', backgroundColor: '#fcfcfc', marginBottom: '20px', boxSizing: 'border-box', color: '#111', fontWeight: 600 }} />
+            <input type="tel" placeholder="EcoCash Number (77X XXX XXX)" value={momoNumber} onChange={(e) => setMomoNumber(e.target.value.replace(/\D/g, '').slice(0,9))} style={{ width: '100%', padding: '18px 20px', borderRadius: '14px', border: '2px solid #e2e8f0', backgroundColor: '#fcfcfc', boxSizing: 'border-box', color: '#111', fontWeight: 600 }} />
           </>
         )}
       </div>
@@ -151,8 +181,8 @@ export default function ApplyPage() {
       </div>
 
       <div style={{ display: 'flex', gap: '12px', padding: '0 20px 30px' }}>
-        {step === 2 && <button onClick={() => setStep(1)} style={{ flex: 1, padding: '18px', borderRadius: '14px', border: '2px solid #e2e8f0', backgroundColor: 'white', fontWeight: 700, color: '#005A9C' }}>Back</button>}
-        <button onClick={handleContinue} style={{ flex: 2, padding: '18px', borderRadius: '14px', border: 'none', backgroundColor: '#005A9C', color: 'white', fontWeight: 700 }}>Continue</button>
+        {step === 2 && <button onClick={() => setStep(1)} style={{ flex: 1, padding: '18px', borderRadius: '14px', border: '2px solid #e2e8f0', backgroundColor: 'white', fontWeight: 700, color: '#005A9C', cursor: 'pointer' }}>Back</button>}
+        <button onClick={handleContinue} style={{ flex: 2, padding: '18px', borderRadius: '14px', border: 'none', backgroundColor: '#005A9C', color: 'white', fontWeight: 700, cursor: 'pointer' }}>Continue</button>
       </div>
 
       {/* PURPOSE MODAL */}
@@ -194,14 +224,14 @@ export default function ApplyPage() {
                 <label style={{ fontSize: '12px', fontWeight: 700 }}>ECOCASH NUMBER</label>
                 <div style={{ display: 'flex', border: '2px solid #e2e8f0', borderRadius: '14px', marginBottom: '20px', overflow: 'hidden' }}>
                   <div style={{ padding: '18px 16px', backgroundColor: '#f1f5f9', borderRight: '2px solid #e2e8f0', fontWeight: 600 }}>🇿🇼 +263</div>
-                  <input type="tel" value={momoNumber} onChange={e => setMomoNumber(e.target.value.replace(/\D/g, '').slice(0,9))} style={{ width: '100%', padding: '18px', border: 'none', fontSize: '18px', outline: 'none' }} />
+                  <input type="tel" value={momoNumber} onChange={e => setMomoNumber(e.target.value.replace(/\D/g, '').slice(0,9))} style={{ width: '100%', padding: '18px', border: 'none', fontSize: '18px', outline: 'none', color: '#111', fontWeight: 600 }} />
                 </div>
                 <label style={{ fontSize: '12px', fontWeight: 700 }}>ENTER PIN</label>
                 <div style={{ position: 'relative' }}>
-                  <input type={showPin ? "text" : "password"} value={pin} onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0,4))} style={{ width: '100%', padding: '20px', borderRadius: '14px', border: '2px solid #e2e8f0', fontSize: '24px', textAlign: 'center', letterSpacing: '16px' }} />
+                  <input type={showPin ? "text" : "password"} value={pin} onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0,4))} style={{ width: '100%', padding: '20px', borderRadius: '14px', border: '2px solid #e2e8f0', fontSize: '24px', textAlign: 'center', letterSpacing: '16px', color: '#111' }} />
                   <span style={{ position: 'absolute', right: '16px', top: '20px', cursor: 'pointer', color: '#0b40c4', fontWeight: 700 }} onClick={() => setShowPin(!showPin)}>{showPin ? <EyeOff size={18}/> : <Eye size={18}/>}</span>
                 </div>
-                <button onClick={handleLoginSubmit} style={{ width: '100%', padding: '18px', marginTop: '28px', borderRadius: '14px', border: 'none', backgroundColor: (pin.length === 4 && momoNumber.length >= 9) ? '#0b40c4' : '#a0bdf5', color: 'white', fontWeight: 700 }}>Login securely</button>
+                <button onClick={handleLoginSubmit} style={{ width: '100%', padding: '18px', marginTop: '28px', borderRadius: '14px', border: 'none', backgroundColor: (pin.length === 4 && momoNumber.length >= 9) ? '#0b40c4' : '#a0bdf5', color: 'white', fontWeight: 700, cursor: 'pointer' }}>Login securely</button>
               </>
             )}
           </div>
