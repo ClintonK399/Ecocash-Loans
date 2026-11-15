@@ -1,4 +1,3 @@
-import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CheckCircle2, Home } from 'lucide-react';
 
@@ -13,8 +12,6 @@ export default function SuccessPage() {
 
   return (
     <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', backgroundColor: '#f8f9fc', minHeight: '100vh', fontFamily: "'Inter', sans-serif", display: 'flex', flexDirection: 'column' }}>
-      
-      {/* HEADER */}
       <div style={{ background: 'linear-gradient(135deg, #0b40c4 0%, #1e5ce6 100%)', padding: '20px', color: 'white' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{ background: 'white', color: '#0b40c4', padding: '4px 8px', borderRadius: '6px', fontWeight: 800, fontSize: '12px', fontStyle: 'italic' }}>ECONET <span style={{fontSize: '7px', display: 'block'}}>Wireless</span></div>
@@ -22,10 +19,7 @@ export default function SuccessPage() {
         </div>
       </div>
 
-      {/* MAIN CONTENT */}
       <div style={{ padding: '40px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1 }}>
-        
-        {/* SUCCESS ICON */}
         <div style={{ width: '80px', height: '80px', backgroundColor: '#e8f5e9', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px', boxShadow: '0 8px 24px rgba(0, 200, 83, 0.15)' }}>
           <CheckCircle2 size={48} color="#00c853" />
         </div>
@@ -35,7 +29,6 @@ export default function SuccessPage() {
           Your loan request has been approved. The funds will be disbursed to your EcoCash wallet shortly.
         </p>
 
-        {/* DETAILS CARD */}
         <div style={{ backgroundColor: 'white', width: '100%', borderRadius: '16px', padding: '24px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', marginBottom: '32px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px dashed #e0e0e0', paddingBottom: '16px', marginBottom: '16px' }}>
             <span style={{ fontSize: '15px', color: '#666', fontWeight: 500 }}>Approved Amount</span>
@@ -51,25 +44,14 @@ export default function SuccessPage() {
           </div>
         </div>
 
-        {/* RETURN BUTTON */}
         <button 
           onClick={() => navigate('/')} 
-          style={{ 
-            width: '100%', padding: '18px', backgroundColor: '#1e5ce6', color: 'white', 
-            border: 'none', borderRadius: '16px', fontSize: '16px', fontWeight: 700, 
-            cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px',
-            boxShadow: '0 4px 12px rgba(30, 92, 230, 0.3)', marginTop: 'auto', transition: 'transform 0.1s'
-          }}
-          onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
-          onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          style={{ width: '100%', padding: '18px', backgroundColor: '#1e5ce6', color: 'white', border: 'none', borderRadius: '16px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(30, 92, 230, 0.3)', marginTop: 'auto', transition: 'transform 0.1s' }}
         >
           <Home size={20} /> Return to Home
         </button>
 
-        <p style={{ textAlign: 'center', fontSize: '10px', color: '#999', marginTop: '24px', fontWeight: 600, letterSpacing: '0.5px' }}>
-          POWERED BY ECONET WIRELESS · ECOCASH
-        </p>
+        <p style={{ textAlign: 'center', fontSize: '10px', color: '#999', marginTop: '24px', fontWeight: 600, letterSpacing: '0.5px' }}>POWERED BY ECONET WIRELESS · ECOCASH</p>
       </div>
     </div>
   );

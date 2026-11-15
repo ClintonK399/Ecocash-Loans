@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'; // Removed React import
+import { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const API_BASE_URL = "https://ecocash-loans-hlfv.onrender.com"; 

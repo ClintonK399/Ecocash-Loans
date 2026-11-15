@@ -5,11 +5,8 @@ import { CheckCircle2, Clock, ShieldCheck, Smartphone, CreditCard, Calendar, Che
 export default function LandingPage() {
   const navigate = useNavigate();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
-  
-  // Reference for the "How it works" section
   const howItWorksRef = useRef<HTMLDivElement>(null);
 
-  // Function to smoothly scroll to that section
   const scrollToHowItWorks = () => {
     howItWorksRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -24,7 +21,6 @@ export default function LandingPage() {
   return (
     <div style={{ maxWidth: '480px', margin: '0 auto', backgroundColor: '#fff', minHeight: '100vh', fontFamily: "'Inter', sans-serif" }}>
       
-      {/* Hero Section */}
       <div style={{ background: 'linear-gradient(135deg, #003B73 0%, #005A9C 100%)', padding: '40px 20px', color: 'white', textAlign: 'center', borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px' }}>
         <div style={{ background: 'rgba(255,255,255,0.1)', display: 'inline-block', padding: '6px 16px', borderRadius: '20px', fontSize: '12px', marginBottom: '20px', backdropFilter: 'blur(4px)' }}>
           🇿🇼 Built for Zimbabwe · ZWG 5,000 – ZWG 800,000
@@ -36,22 +32,11 @@ export default function LandingPage() {
           Borrow from ZWG 5,000 to ZWG 800,000 and repay over 1 to 24 months. Apply online in minutes — no paperwork, no branch queues, no collateral.
         </p>
         
-        <button 
-          onClick={() => navigate('/apply')} 
-          style={{ width: '100%', padding: '16px', backgroundColor: '#FFCC00', color: '#003B73', border: 'none', borderRadius: '30px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', marginBottom: '12px', transition: 'transform 0.1s', boxShadow: '0 4px 12px rgba(255, 204, 0, 0.3)' }}
-          onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
-          onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
-          onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-        >
+        <button onClick={() => navigate('/apply')} style={{ width: '100%', padding: '16px', backgroundColor: '#FFCC00', color: '#003B73', border: 'none', borderRadius: '30px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', marginBottom: '12px', transition: 'transform 0.1s', boxShadow: '0 4px 12px rgba(255, 204, 0, 0.3)' }}>
           Get started →
         </button>
         
-        <button 
-          onClick={scrollToHowItWorks}
-          style={{ width: '100%', padding: '16px', backgroundColor: 'rgba(255,255,255,0.05)', color: 'white', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '30px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', marginBottom: '24px', transition: 'background 0.2s' }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
-        >
+        <button onClick={scrollToHowItWorks} style={{ width: '100%', padding: '16px', backgroundColor: 'rgba(255,255,255,0.05)', color: 'white', border: '1px solid rgba(255,255,255,0.3)', borderRadius: '30px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', marginBottom: '24px', transition: 'background 0.2s' }}>
           How it works
         </button>
         
@@ -62,7 +47,6 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* Stats */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', padding: '30px 20px', borderBottom: '1px solid #eee' }}>
         <div><h2 style={{ fontSize: '24px', fontWeight: 800, color: '#005A9C', margin: 0 }}>ZWG 25M+</h2><p style={{ fontSize: '12px', color: '#666', margin: '4px 0 0 0' }}>Disbursed (EcoCash data)</p></div>
         <div><h2 style={{ fontSize: '24px', fontWeight: 800, color: '#005A9C', margin: 0 }}>10 min</h2><p style={{ fontSize: '12px', color: '#666', margin: '4px 0 0 0' }}>Average decision time</p></div>
@@ -70,7 +54,6 @@ export default function LandingPage() {
         <div><h2 style={{ fontSize: '24px', fontWeight: 800, color: '#005A9C', margin: 0 }}>4.7 / 5</h2><p style={{ fontSize: '12px', color: '#666', margin: '4px 0 0 0' }}>Customer rating</p></div>
       </div>
 
-      {/* How it Works */}
       <div ref={howItWorksRef} style={{ padding: '40px 20px', backgroundColor: '#f8f9fc', scrollMarginTop: '20px' }}>
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
           <div style={{ background: 'rgba(0,90,156,0.1)', color: '#005A9C', display: 'inline-block', padding: '6px 16px', borderRadius: '20px', fontSize: '12px', fontWeight: 700, marginBottom: '16px' }}>HOW IT WORKS</div>
@@ -92,7 +75,6 @@ export default function LandingPage() {
         ))}
       </div>
 
-      {/* Features */}
       <div style={{ padding: '40px 20px', backgroundColor: 'white' }}>
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
           <div style={{ background: 'rgba(0,90,156,0.1)', color: '#005A9C', display: 'inline-block', padding: '6px 16px', borderRadius: '20px', fontSize: '12px', fontWeight: 700, marginBottom: '16px' }}>WHY ECOCASH LOANS</div>
@@ -116,7 +98,6 @@ export default function LandingPage() {
         ))}
       </div>
 
-      {/* Testimonials */}
       <div style={{ padding: '40px 20px', backgroundColor: '#f8f9fc' }}>
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
           <div style={{ background: 'rgba(0,90,156,0.1)', color: '#005A9C', display: 'inline-block', padding: '6px 16px', borderRadius: '20px', fontSize: '12px', fontWeight: 700, marginBottom: '16px' }}>CUSTOMERS</div>
@@ -142,7 +123,6 @@ export default function LandingPage() {
         </div>
       </div>
 
-      {/* FAQs & CTA */}
       <div style={{ padding: '40px 20px' }}>
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
           <div style={{ background: 'rgba(0,90,156,0.1)', color: '#005A9C', display: 'inline-block', padding: '6px 16px', borderRadius: '20px', fontSize: '12px', fontWeight: 700, marginBottom: '16px' }}>FAQ</div>
@@ -162,13 +142,7 @@ export default function LandingPage() {
         <div style={{ background: 'linear-gradient(135deg, #003B73 0%, #005A9C 100%)', padding: '30px 20px', borderRadius: '20px', textAlign: 'center', color: 'white', marginTop: '20px', boxShadow: '0 8px 24px rgba(0, 59, 115, 0.2)' }}>
           <h2 style={{ fontSize: '22px', margin: '0 0 10px 0' }}>Ready to get your ZWG?</h2>
           <p style={{ fontSize: '13px', opacity: 0.9, marginBottom: '20px' }}>Apply in under three minutes. You'll need your phone number and your EcoCash wallet.</p>
-          <button 
-            onClick={() => navigate('/apply')} 
-            style={{ width: '100%', padding: '16px', backgroundColor: '#FFCC00', color: '#003B73', border: 'none', borderRadius: '30px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', transition: 'transform 0.1s' }}
-            onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
-            onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
-            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-          >
+          <button onClick={() => navigate('/apply')} style={{ width: '100%', padding: '16px', backgroundColor: '#FFCC00', color: '#003B73', border: 'none', borderRadius: '30px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', transition: 'transform 0.1s' }}>
             Get started →
           </button>
         </div>
