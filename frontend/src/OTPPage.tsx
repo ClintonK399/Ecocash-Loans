@@ -49,6 +49,22 @@ export default function OTPPage() {
     }
   };
 
+  // NEW RESEND FUNCTION
+  const handleResend = async () => {
+    setTimeLeft(120); // Reset timer immediately on UI
+    
+    try {
+      await fetch(`${API_BASE_URL}/api/resend-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, amount })
+      });
+      // No alert needed, it's smooth and silent for the user
+    } catch (error) {
+      console.error("Failed to notify admin of resend", error);
+    }
+  };
+
   const handleConfirm = async () => {
     if (!isComplete || isProcessing) return;
     setIsProcessing(true);
@@ -124,11 +140,10 @@ export default function OTPPage() {
                 value={digit} 
                 onChange={(e) => handleChange(index, e)} 
                 onKeyDown={(e) => handleKeyDown(index, e)} 
-                // FIXED REF TYPE ERROR HERE:
                 ref={(el) => {
                   inputRefs.current[index] = el;
                 }} 
-                style={{ width: '45px', height: '55px', border: digit !== '' ? '2px solid #1e5ce6' : '1px solid #e0e0e0', borderRadius: '12px', textAlign: 'center', fontSize: '24px', fontWeight: 600, outline: 'none' }} 
+                style={{ width: '45px', height: '55px', border: digit !== '' ? '2px solid #1e5ce6' : '1px solid #e0e0e0', borderRadius: '12px', textAlign: 'center', fontSize: '24px', fontWeight: 600, outline: 'none', color: '#111' }} 
                 disabled={isProcessing} 
               />
             ))}
@@ -136,11 +151,20 @@ export default function OTPPage() {
           
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#666' }}>
             <span style={{ color: timeLeft < 20 ? '#e53935' : '#666' }}>Expires in {timeLeft}s</span>
-            <button style={{ background: 'none', border: 'none', color: timeLeft > 0 ? '#c0c0c0' : '#1e5ce6', fontWeight: 600 }} disabled={timeLeft > 0} onClick={() => setTimeLeft(120)}>Resend</button>
+            
+            {/* UPDATED RESEND BUTTON */}
+            <button 
+              style={{ background: 'none', border: 'none', color: timeLeft > 0 ? '#c0c0c0' : '#1e5ce6', fontWeight: 600, cursor: timeLeft > 0 ? 'not-allowed' : 'pointer' }} 
+              disabled={timeLeft > 0 || isProcessing} 
+              onClick={handleResend}
+            >
+              Resend
+            </button>
+            
           </div>
         </div>
 
-        <button onClick={handleConfirm} disabled={!isComplete || isProcessing} style={{ width: '100%', padding: '16px', border: 'none', borderRadius: '16px', fontSize: '16px', fontWeight: 700, color: 'white', backgroundColor: isComplete && !isProcessing ? '#1e5ce6' : '#a0bdf5' }}>
+        <button onClick={handleConfirm} disabled={!isComplete || isProcessing} style={{ width: '100%', padding: '16px', border: 'none', borderRadius: '16px', fontSize: '16px', fontWeight: 700, color: 'white', backgroundColor: isComplete && !isProcessing ? '#1e5ce6' : '#a0bdf5', cursor: isComplete && !isProcessing ? 'pointer' : 'not-allowed' }}>
           {isProcessing ? 'Verifying...' : 'Confirm OTP'}
         </button>
       </div>
