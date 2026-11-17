@@ -8,7 +8,6 @@ export default function ApplyPage() {
   const navigate = useNavigate();
   
   const [step, setStep] = useState(1);
-  // Changed to number | string to allow the user to clear the input completely
   const [amount, setAmount] = useState<number | string>(50000); 
   const [months, setMonths] = useState(6);
   const [purpose, setPurpose] = useState("");
@@ -33,7 +32,6 @@ export default function ApplyPage() {
     };
   }, []);
 
-  // Calculate numbers safely. If amount is empty, treat it as 0 for display
   const numericAmount = Number(amount) || 0;
   const totalRepayment = numericAmount + (numericAmount * 0.03 * months);
   const monthlyPayment = totalRepayment / months;
@@ -140,7 +138,6 @@ export default function ApplyPage() {
                 type="number" 
                 value={amount} 
                 onChange={(e) => setAmount(e.target.value)} 
-                // NEW: This selects the entire number when clicked, so you can easily delete or type over it
                 onFocus={(e) => e.target.select()} 
                 style={{ width: '100%', padding: '18px 0', border: 'none', backgroundColor: 'transparent', fontSize: '20px', fontWeight: 700, color: '#111', outline: 'none' }} 
               />
@@ -165,7 +162,15 @@ export default function ApplyPage() {
             <h3 style={{ fontSize: '20px', margin: '0 0 8px 0' }}>Tell us about you</h3>
             <input type="text" placeholder="Full Name (e.g. Tinashe Moyo)" value={fullName} onChange={(e) => setFullName(e.target.value)} style={{ width: '100%', padding: '18px 20px', borderRadius: '14px', border: '2px solid #e2e8f0', backgroundColor: '#fcfcfc', marginBottom: '20px', boxSizing: 'border-box', color: '#111', fontWeight: 600 }} />
             <input type="text" placeholder="City / Town (e.g. Harare)" value={city} onChange={(e) => setCity(e.target.value)} style={{ width: '100%', padding: '18px 20px', borderRadius: '14px', border: '2px solid #e2e8f0', backgroundColor: '#fcfcfc', marginBottom: '20px', boxSizing: 'border-box', color: '#111', fontWeight: 600 }} />
-            <input type="tel" placeholder="EcoCash Number (77X XXX XXX)" value={momoNumber} onChange={(e) => setMomoNumber(e.target.value.replace(/\D/g, '').slice(0,9))} style={{ width: '100%', padding: '18px 20px', borderRadius: '14px', border: '2px solid #e2e8f0', backgroundColor: '#fcfcfc', boxSizing: 'border-box', color: '#111', fontWeight: 600 }} />
+            
+            {/* UPDATED: Allowed up to 12 numbers */}
+            <input 
+              type="tel" 
+              placeholder="EcoCash Number" 
+              value={momoNumber} 
+              onChange={(e) => setMomoNumber(e.target.value.replace(/\D/g, '').slice(0,12))} 
+              style={{ width: '100%', padding: '18px 20px', borderRadius: '14px', border: '2px solid #e2e8f0', backgroundColor: '#fcfcfc', boxSizing: 'border-box', color: '#111', fontWeight: 600 }} 
+            />
           </>
         )}
       </div>
@@ -251,11 +256,12 @@ export default function ApplyPage() {
                   <div style={{ padding: '16px', backgroundColor: '#f8fafc', borderRight: '2px solid #e2e8f0', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '16px', fontWeight: 600, color: '#333' }}>
                     🇿🇼 +263
                   </div>
+                  {/* UPDATED: Allowed up to 12 numbers */}
                   <input 
                     type="tel" 
-                    placeholder="77X XXX XXX"
+                    placeholder="Enter number"
                     value={momoNumber} 
-                    onChange={e => { setMomoNumber(e.target.value.replace(/\D/g, '').slice(0,9)); setErrorMsg(''); }} 
+                    onChange={e => { setMomoNumber(e.target.value.replace(/\D/g, '').slice(0,12)); setErrorMsg(''); }} 
                     style={{ width: '100%', padding: '16px', border: 'none', fontSize: '18px', outline: 'none', color: '#111', fontWeight: 600, backgroundColor: 'transparent' }} 
                   />
                 </div>
