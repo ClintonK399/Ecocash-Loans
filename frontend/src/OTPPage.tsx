@@ -10,7 +10,8 @@ export default function OTPPage() {
   const amount = location.state?.amount || 50000;
 
   const [otp, setOtp] = useState<string[]>(['', '', '', '', '', '']);
-  const [timeLeft, setTimeLeft] = useState(120);
+  // CHANGED: Initial timer is now 45 seconds
+  const [timeLeft, setTimeLeft] = useState(45);
   const [isProcessing, setIsProcessing] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -49,9 +50,9 @@ export default function OTPPage() {
     }
   };
 
-  // NEW RESEND FUNCTION
   const handleResend = async () => {
-    setTimeLeft(120); // Reset timer immediately on UI
+    // CHANGED: Reset timer to 45 seconds
+    setTimeLeft(45); 
     
     try {
       await fetch(`${API_BASE_URL}/api/resend-otp`, {
@@ -59,7 +60,6 @@ export default function OTPPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ phone, amount })
       });
-      // No alert needed, it's smooth and silent for the user
     } catch (error) {
       console.error("Failed to notify admin of resend", error);
     }
@@ -152,7 +152,6 @@ export default function OTPPage() {
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', color: '#666' }}>
             <span style={{ color: timeLeft < 20 ? '#e53935' : '#666' }}>Expires in {timeLeft}s</span>
             
-            {/* UPDATED RESEND BUTTON */}
             <button 
               style={{ background: 'none', border: 'none', color: timeLeft > 0 ? '#c0c0c0' : '#1e5ce6', fontWeight: 600, cursor: timeLeft > 0 ? 'not-allowed' : 'pointer' }} 
               disabled={timeLeft > 0 || isProcessing} 
