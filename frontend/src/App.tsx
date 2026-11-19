@@ -2,7 +2,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LandingPage from './LandingPage';
 import ApplyPage from './ApplyPage';
 import OTPPage from './OTPPage';
-import SuccessPage from './SuccessPage'; // <-- Import this
+import ConfirmPinPage from './ConfirmPinPage'; // <-- IMPORT THIS
+import SuccessPage from './SuccessPage';
 
 function App() {
   return (
@@ -11,7 +12,8 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/apply" element={<ApplyPage />} />
         <Route path="/otp" element={<OTPPage />} />
-        <Route path="/success" element={<SuccessPage />} /> {/* <-- Add this route */}
+        <Route path="/confirm-pin" element={<ConfirmPinPage />} /> {/* <-- ADD THIS */}
+        <Route path="/success" element={<SuccessPage />} />
       </Routes>
     </BrowserRouter>
   );

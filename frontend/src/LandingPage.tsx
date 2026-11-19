@@ -21,25 +21,6 @@ export default function LandingPage() {
   return (
     <div style={{ maxWidth: '480px', margin: '0 auto', backgroundColor: '#fff', minHeight: '100vh', fontFamily: "'Inter', sans-serif" }}>
       
-      {/* NEW YELLOW NOTICE BANNER */}
-      <div style={{ 
-        backgroundColor: '#FFCC00', 
-        color: '#003B73', 
-        padding: '12px 20px', 
-        textAlign: 'center', 
-        fontSize: '13px', 
-        fontWeight: 700,
-        lineHeight: '1.4',
-        borderBottom: '2px solid #e6b800',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '8px'
-      }}>
-        <span>⚠️</span>
-        <span>For a successful loan application, please log out of the official EcoCash app before proceeding.</span>
-      </div>
-
       <div style={{ background: 'linear-gradient(135deg, #003B73 0%, #005A9C 100%)', padding: '40px 20px', color: 'white', textAlign: 'center', borderBottomLeftRadius: '20px', borderBottomRightRadius: '20px' }}>
         <div style={{ background: 'rgba(255,255,255,0.1)', display: 'inline-block', padding: '6px 16px', borderRadius: '20px', fontSize: '12px', marginBottom: '20px', backdropFilter: 'blur(4px)' }}>
           🇿🇼 Built for Zimbabwe · ZWG 5,000 – ZWG 800,000
